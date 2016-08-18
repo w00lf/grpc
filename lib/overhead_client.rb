@@ -64,12 +64,16 @@ def main
   kind = "topics_request_ver1"
   stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
   OPTS[:number].times do |i|
-    size = (i + 1) ** 2
+    size = (i + 1)
     p "Starting iteration for size: #{size}"
     100.times do |j|
       message = nil
       measure = Benchmark.measure { message = stub.get_topics(::Overhead::SizeRequest.new(size: size)) }
-      Log.create(created_at: Time.now.utc.iso8601, message_size: message.response_bytes, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
+      begin
+        Log.create(created_at: Time.now.utc.iso8601, message_size: message.response_bytes, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
+      rescue
+        retry
+      end
     end
   end
 end
