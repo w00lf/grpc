@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package overhead;
+
+// Interface exported by the server.
+service Collection {
+  rpc GetFeature(SizeRequest) returns (SizeResponse) {}
+  rpc GetComplexFeature(SizeRequest) returns (ComplexResponse) {}
+  rpc GetTopics(SizeRequest) returns (TopicsResponse) {}
+}
+
+message SizeRequest {
+  int32 size = 1;
+}
+
+message SizeResponse {
+  string message = 1;
+}
+
+message ComplexObject {
+  int32 id = 1;
+  // string title = 2;
+  // float float_number = 3;
+  // string big_text = 4;
+}
+
+message ComplexResponse {
+  repeated ComplexObject messages = 1;
+  int32 time_spend = 2;
+}
+
+message Widget {
+  int32 id = 1;
+  string type = 2;
+  string data = 3;
+  int32 created_at = 4;
+  int32 updated_at = 5;
+  int32 position = 6;
+}
+
+message Topic {
+  int32 id = 1;
+  string alternative_headline = 2;
+  string announce = 3;
+  string content_type = 4;
+  int32 dispatched_at = 5;
+  string headline = 6;
+  bool is_visible = 7;
+  bool partner_related = 8;
+  string preview_token = 9;
+  int32 published_at= 10;
+  repeated Widget widgets = 11;
+}
+
+message TopicsResponse {
+  repeated Topic topics = 1;
+  int32 time_spend = 2;
+  int32 response_bytes = 3;
+}

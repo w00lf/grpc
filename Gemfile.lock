@@ -1,0 +1,108 @@
+PATH
+  remote: .
+  specs:
+    topicrpc (0.11.0)
+      byebug
+      elasticsearch-model
+      elasticsearch-persistence
+      elasticsearch-rails
+      faker
+      grpc (~> 0.11)
+      slop (~> 4.0)
+      virtus
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (5.0.0.1)
+      activesupport (= 5.0.0.1)
+    activesupport (5.0.0.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    addressable (2.4.0)
+    axiom-types (0.1.1)
+      descendants_tracker (~> 0.0.4)
+      ice_nine (~> 0.11.0)
+      thread_safe (~> 0.3, >= 0.3.1)
+    byebug (9.0.5)
+    coercible (1.0.0)
+      descendants_tracker (~> 0.0.1)
+    concurrent-ruby (1.0.2)
+    descendants_tracker (0.0.4)
+      thread_safe (~> 0.3, >= 0.3.1)
+    elasticsearch (2.0.0)
+      elasticsearch-api (= 2.0.0)
+      elasticsearch-transport (= 2.0.0)
+    elasticsearch-api (2.0.0)
+      multi_json
+    elasticsearch-model (0.1.9)
+      activesupport (> 3)
+      elasticsearch (> 0.4)
+      hashie
+    elasticsearch-persistence (0.1.9)
+      activemodel (> 3)
+      activesupport (> 3)
+      elasticsearch (> 0.4)
+      elasticsearch-model (>= 0.1)
+      hashie
+      virtus
+    elasticsearch-rails (0.1.9)
+    elasticsearch-transport (2.0.0)
+      faraday
+      multi_json
+    equalizer (0.0.11)
+    faker (1.6.6)
+      i18n (~> 0.5)
+    faraday (0.9.2)
+      multipart-post (>= 1.2, < 3)
+    google-protobuf (3.0.0)
+    googleauth (0.5.1)
+      faraday (~> 0.9)
+      jwt (~> 1.4)
+      logging (~> 2.0)
+      memoist (~> 0.12)
+      multi_json (~> 1.11)
+      os (~> 0.9)
+      signet (~> 0.7)
+    grpc (0.15.0)
+      google-protobuf (~> 3.0.0.alpha.5.0.3)
+      googleauth (~> 0.5.1)
+    hashie (3.4.4)
+    i18n (0.7.0)
+    ice_nine (0.11.2)
+    jwt (1.5.4)
+    little-plugger (1.1.4)
+    logging (2.1.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.10)
+    memoist (0.14.0)
+    minitest (5.9.0)
+    multi_json (1.12.1)
+    multipart-post (2.0.0)
+    os (0.9.6)
+    signet (0.7.3)
+      addressable (~> 2.3)
+      faraday (~> 0.9)
+      jwt (~> 1.5)
+      multi_json (~> 1.10)
+    slop (4.3.0)
+    thread_safe (0.3.5)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+    virtus (1.0.5)
+      axiom-types (~> 0.1)
+      coercible (~> 1.0)
+      descendants_tracker (~> 0.0, >= 0.0.3)
+      equalizer (~> 0.0, >= 0.0.9)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.7)
+  topicrpc!
+
+BUNDLED WITH
+   1.12.5
