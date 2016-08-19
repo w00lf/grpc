@@ -31,39 +31,26 @@ end
 def recreate_connection_test(n, suffix = '')
   kind = "recreate_connection#{suffix}"
   n.times do |i|
-    stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
-    perform_interations(stub: stub, i: i, kind: kind)
-    stub = nil
-  end
-end
-
-def objects_stable_connection_test(n, suffix = '')
-  kind = "stable_connection#{suffix}"
-  stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
-  n.times do |i|
     size = (i + 1) ** 2
     p "Starting iteration for size: #{size}"
     100.times do |j|
-      message = nil
-      measure = Benchmark.measure { message = stub.get_complex_feature(::Overhead::SizeRequest.new(size: size)) }
-      Log.create(created_at: Time.now.utc.iso8601, message_size: size, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
+      stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
+      measure = Benchmark.measure { stub.get_feature(::Overhead::SizeRequest.new(size: size)) }
+      begin
+        Log.create(created_at: Time.now.utc.iso8601, message_size: size, time_spend: (measure.real * 1000).to_i, kind: kind)
+      rescue
+        p 'Cnnot connect to elastic'
+        retry
+      end
+      stub = nil
     end
   end
 end
 
-def perform_interations(stub:, i:, kind:)
-  size = (i + 1) ** 2
-  p "Starting iteration for size: #{size}"
-  100.times do |j|
-    measure = Benchmark.measure { stub.get_feature(::Overhead::SizeRequest.new(size: size)) }
-    Log.create(created_at: Time.now.utc.iso8601, message_size: size, time_spend: (measure.real * 1000).to_i, kind: kind)
-  end
-end
-
-def main
+def objects_stable_connection_test(n, suffix = '')
   kind = "topics_request_ver1"
   stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
-  OPTS[:number].times do |i|
+  n.times do |i|
     size = (i + 1)
     p "Starting iteration for size: #{size}"
     100.times do |j|
@@ -76,6 +63,24 @@ def main
       end
     end
   end
+end
+
+def perform_interations(stub:, i:, kind:)
+  size = (i + 1) ** 2
+  p "Starting iteration for size: #{size}"
+  100.times do |j|
+    measure = Benchmark.measure { stub.get_feature(::Overhead::SizeRequest.new(size: size)) }
+    begin
+      Log.create(created_at: Time.now.utc.iso8601, message_size: size, time_spend: (measure.real * 1000).to_i, kind: kind)
+    rescue
+      p 'Cnnot connect to elastic'
+      retry
+    end
+  end
+end
+
+def main
+  recreate_connection_test(OPTS[:number], 'ver1')
 end
 main
 

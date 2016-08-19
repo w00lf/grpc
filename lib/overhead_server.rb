@@ -20,12 +20,10 @@ class OverheadRpcServer < Overhead::Collection::Service
   TOPIC_WEIGTH_BYTES = 7500
 
   def get_feature(size_request, _unused_call)
-    p size_request.inspect
-    ::Overhead::SizeResponse.new(message: 'ф' * size_request.size)
+    ::Overhead::SizeResponse.new(message: random_utf_string(size_request.size))
   end
 
   def get_complex_feature(size_request, _unused_call)
-    p 'In complex requets'
     ::Overhead::ComplexResponse.new(time_spend: 1, messages: [::Overhead::ComplexObject.new(id: 1)])
   end
 
