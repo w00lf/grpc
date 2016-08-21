@@ -4,7 +4,7 @@ services:
     image: elasticsearch
     ports: 
       - "9200:9200"
-  web:
+  kibana:
     image: kibana 
     ports:
       - "5601:5601"
@@ -12,3 +12,29 @@ services:
       - db
     environment:
       - ELASTICSEARCH_URL=http://db:9200
+
+  web:
+    build: .
+    command: bundle exec ruby ./lib/json_server.rb
+    volumes:
+      - .:/testgrpc
+    ports:
+      - "50051:50051"
+
+  grpc:
+    build: .
+    command: bundle exec ruby ./lib/overhead_server.rb
+    volumes:
+      - .:/testgrpc
+    ports:
+      - "50051:50051"
+
+  client:
+    build: .
+    command: bundle exec ruby ./lib/overhead_client.rb --number=500
+    volumes:
+      - .:/testgrpc
+    environment:
+      - ELASTICSEARCH_URL=http://db:9200
+
+

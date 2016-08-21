@@ -34,6 +34,7 @@ class OverheadRpcServer < Overhead::Collection::Service
   def create_object(size)
     result = nil
     time_spend = (Benchmark.measure { result = Array.new(size){ create_topic } }.real * 1000).to_i
+    p time_spend
     ::Overhead::TopicsResponse.new(time_spend: time_spend, topics: result, response_bytes: TOPIC_WEIGTH_BYTES * size)
   end
 

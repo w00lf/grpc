@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 Gem::Specification.new do |s|
-  s.name          = 'topicrpc'
+  s.name          = 'testgrpc'
   s.version       = '0.11.0'
   s.authors       = ['gRPC Authors']
   s.email         = 'foo@example.local'
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'slop', '~> 4.0'
   s.add_dependency 'faker'
   s.add_dependency 'byebug'
+  s.add_dependency 'sinatra'
 
   s.add_development_dependency 'bundler', '~> 1.7'
 end

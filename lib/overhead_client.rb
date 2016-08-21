@@ -12,13 +12,15 @@ end.freeze
 
 class Log
   include Elasticsearch::Persistence::Model
+
   attribute :created_at, Date, type: 'date'
   attribute :kind, String, type: 'string', mapping: { index: 'not_analyzed' }
   attribute :message_size, Integer, default: 0, mapping: { type: 'integer' }
   attribute :time_spend, Integer, default: 0, mapping: { type: 'integer' }
 end
-
+Log.gateway.client = Elasticsearch::Client.new url: ENV['ELASTICSEARCH_URL'], log: false
 Log.gateway.client.indices.delete index: Log.index_name if OPTS.remove?
+p ENV['ELASTICSEARCH_URL']
 
 def stable_connection_test(n, suffix = '')
   kind = "stable_connection#{suffix}"
@@ -48,12 +50,12 @@ def recreate_connection_test(n, suffix = '')
 end
 
 def objects_stable_connection_test(n, suffix = '')
-  kind = "topics_request_ver1"
-  stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
+  kind = "topics_request#{suffix}"
+  stub = Overhead::Collection::Stub.new('grpc:50051', :this_channel_is_insecure)
   n.times do |i|
     size = (i + 1)
     p "Starting iteration for size: #{size}"
-    100.times do |j|
+    2.times do |j|
       message = nil
       measure = Benchmark.measure { message = stub.get_topics(::Overhead::SizeRequest.new(size: size)) }
       begin
@@ -63,6 +65,38 @@ def objects_stable_connection_test(n, suffix = '')
       end
     end
   end
+end
+
+def rest_objects_satble_connection_test(n, suffix = '')
+  kind = "rest_topics_request#{suffix}"
+  n.times do |i|
+    size = (i + 1)
+    p "Starting iteration for size: #{size}"
+    2.times do |j|
+      message = nil
+      measure = Benchmark.measure do 
+	response = JSON.load(Net::HTTP.get(URI("http://web:50051/topics?size=#{size}&fo#{rand(1..10000)}=#{rand(1..10000)}")))
+        topics = response['topics'].map do |topic|
+          widget_attr = topic.delete('widgets')
+          ::Overhead::Topic.new(symb_keys(topic).merge(widgets: widget_attr.map {|n| ::Overhead::Widget.new(symb_keys(n)) }))
+        end
+        message = ::Overhead::TopicsResponse.new(time_spend: response['time_spend'], topics: topics, response_bytes: response['response_bytes'])
+      end
+      p "real: #{(measure.real * 1000)}"
+      p "minus: #{message.time_spend}"
+      begin
+        Log.create(created_at: Time.now.utc.iso8601, message_size: message.response_bytes, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
+      rescue => e 
+        p e
+        p 'Cannot connect to elastic'
+        retry
+      end
+    end
+  end
+end
+
+def symb_keys(hash)
+  hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 end
 
 def perform_interations(stub:, i:, kind:)
@@ -80,7 +114,8 @@ def perform_interations(stub:, i:, kind:)
 end
 
 def main
-  recreate_connection_test(OPTS[:number], 'ver1')
+  # rest_objects_satble_connection_test(OPTS[:number], 'ver5')
+  objects_stable_connection_test(OPTS[:number], 'ver2')  
 end
 main
 

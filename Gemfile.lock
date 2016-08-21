@@ -1,13 +1,14 @@
 PATH
   remote: .
   specs:
-    topicrpc (0.11.0)
+    testgrpc (0.11.0)
       byebug
       elasticsearch-model
       elasticsearch-persistence
       elasticsearch-rails
       faker
       grpc (~> 0.11)
+      sinatra
       slop (~> 4.0)
       virtus
 
@@ -82,13 +83,21 @@ GEM
     multi_json (1.12.1)
     multipart-post (2.0.0)
     os (0.9.6)
+    rack (1.6.4)
+    rack-protection (1.5.3)
+      rack
     signet (0.7.3)
       addressable (~> 2.3)
       faraday (~> 0.9)
       jwt (~> 1.5)
       multi_json (~> 1.10)
-    slop (4.3.0)
+    sinatra (1.4.7)
+      rack (~> 1.5)
+      rack-protection (~> 1.4)
+      tilt (>= 1.3, < 3)
+    slop (4.4.1)
     thread_safe (0.3.5)
+    tilt (2.0.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     virtus (1.0.5)
@@ -102,7 +111,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.7)
-  topicrpc!
+  testgrpc!
 
 BUNDLED WITH
    1.12.5
