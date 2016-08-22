@@ -18,28 +18,28 @@ module ContentGenerator
   end
 
   def topic_attributes
-    { 
-	id: rand(1..10_000),
-        headline: random_utf_string(200),
-        alternative_headline: random_utf_string(200),
-        announce: random_utf_string(400),
-        content_type: random_asci_string(6),
-        dispatched_at: random_unix,
-        is_visible: rand_bool,
-        partner_related: rand_bool,
-        preview_token: random_asci_string(12),
-        published_at: random_unix,
+    {
+      id: rand(1..10_000),
+      headline: random_utf_string(200),
+      alternative_headline: random_utf_string(200),
+      announce: random_utf_string(400),
+      content_type: random_asci_string(6),
+      dispatched_at: random_unix,
+      is_visible: rand_bool,
+      partner_related: rand_bool,
+      preview_token: random_asci_string(12),
+      published_at: random_unix,
     }
   end
 
   def widget_attributes
-    { 
-       id: rand(1..10_000),
-       type: random_asci_string(6),
-       data: random_utf_string(1000),
-       created_at: random_unix,
-       updated_at: random_unix,
-       position: rand(1..100)
+    {
+      id: rand(1..10_000),
+      type: random_asci_string(6),
+      data: random_utf_string(1000),
+      created_at: random_unix,
+      updated_at: random_unix,
+      position: rand(1..100)
     }
   end
 
