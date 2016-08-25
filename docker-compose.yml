@@ -31,7 +31,7 @@ services:
 
   client:
     build: .
-    command: bundle exec ruby ./lib/overhead_client.rb --number=500
+    command: bundle exec ruby ./lib/overhead_client.rb --number=200 --suffix=ver11 --type=grpc
     volumes:
       - .:/testgrpc
     environment:

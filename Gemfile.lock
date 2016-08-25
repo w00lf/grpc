@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    testgrpc (0.11.0)
+    testgrpc (1.0.0)
       byebug
       elasticsearch-model
       elasticsearch-persistence
       elasticsearch-rails
       faker
-      grpc (~> 0.11)
+      grpc (= 1.0.0)
       sinatra
       slop (~> 4.0)
       virtus
@@ -67,8 +67,8 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
-    grpc (0.15.0)
-      google-protobuf (~> 3.0.0.alpha.5.0.3)
+    grpc (1.0.0)
+      google-protobuf (~> 3.0)
       googleauth (~> 0.5.1)
     hashie (3.4.4)
     i18n (0.7.0)
@@ -78,7 +78,7 @@ GEM
     logging (2.1.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    memoist (0.14.0)
+    memoist (0.15.0)
     minitest (5.9.0)
     multi_json (1.12.1)
     multipart-post (2.0.0)

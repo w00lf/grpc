@@ -20,6 +20,7 @@ get '/topics' do
   result = nil
   size = params[:size].to_i
   time_spend = (Benchmark.measure { result = Array.new(size){ topic_attributes.merge(widgets: Array.new(3) { widget_attributes }) } }.real * 1000).to_i
+  p "Size request: #{size}"
   p time_spend
   
   JSON({ time_spend: time_spend, topics: result, response_bytes: TOPIC_WEIGTH_BYTES * size })

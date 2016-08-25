@@ -3,7 +3,7 @@
 
 Gem::Specification.new do |s|
   s.name          = 'testgrpc'
-  s.version       = '0.11.0'
+  s.version       = '1.0.0'
   s.authors       = ['gRPC Authors']
   s.email         = 'foo@example.local'
   s.homepage      = 'https://github.com/grpc/grpc'
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.platform      = Gem::Platform::RUBY
 
-  s.add_dependency 'grpc', '~> 0.11'
+  s.add_dependency 'grpc', '1.0.0'
   s.add_dependency 'virtus'
   s.add_dependency 'elasticsearch-model'
   s.add_dependency 'elasticsearch-persistence'
