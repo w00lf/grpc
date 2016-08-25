@@ -78,8 +78,8 @@ def rest_objects_satble_connection_test(n, suffix = '')
     p "Starting iteration for size: #{size}"
     10.times do |j|
       message = nil
-      measure = Benchmark.measure do 
-	response = JSON.load(Net::HTTP.get(URI("http://web:50051/topics?size=#{size}&fo#{rand(1..10000)}=#{rand(1..10000)}")))
+      measure = Benchmark.measure do
+	      response = JSON.load(Net::HTTP.get(URI("http://web:50051/topics?size=#{size}&fo#{rand(1..10000)}=#{rand(1..10000)}")))
         topics = response['topics'].map do |topic|
           widget_attr = topic.delete('widgets')
           ::Overhead::Topic.new(symb_keys(topic).merge(widgets: widget_attr.map {|n| ::Overhead::Widget.new(symb_keys(n)) }))
@@ -88,7 +88,7 @@ def rest_objects_satble_connection_test(n, suffix = '')
       end
       begin
         Log.create(created_at: Time.now.utc.iso8601, message_size: message.response_bytes, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
-      rescue => e 
+      rescue => e
         p e
         p 'Cannot connect to elastic'
         retry

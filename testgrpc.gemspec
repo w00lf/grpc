@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'faker'
   s.add_dependency 'byebug'
   s.add_dependency 'sinatra'
+  s.add_dependency 'active_model_serializers'
 
   s.add_development_dependency 'bundler', '~> 1.7'
 end
