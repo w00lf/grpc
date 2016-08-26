@@ -9,6 +9,7 @@ PATH
       elasticsearch-rails
       faker
       grpc (= 1.0.0)
+      method_profiler
       sinatra
       slop (~> 4.0)
       virtus
@@ -93,6 +94,7 @@ GEM
       google-protobuf (~> 3.0)
       googleauth (~> 0.5.1)
     hashie (3.4.4)
+    hirb (0.7.3)
     i18n (0.7.0)
     ice_nine (0.11.2)
     json (1.8.3)
@@ -103,9 +105,11 @@ GEM
     logging (2.1.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    memoist (0.15.0)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
+    memoist (0.15.0)
+    method_profiler (2.0.1)
+      hirb (>= 0.6.0)
     mini_portile2 (2.1.0)
     minitest (5.9.0)
     multi_json (1.12.1)

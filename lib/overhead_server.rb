@@ -13,9 +13,12 @@ require 'overhead_services_pb'
 require 'benchmark'
 require 'faker'
 require 'byebug'
+require 'content_generator'
+require 'method_profiler'
+# require 'grpc_logging'
 
 class OverheadRpcServer < Overhead::Collection::Service
-  include ContentGenerator
+  include ::ContentGenerator
 
   def get_feature(size_request, _unused_call)
     ::Overhead::SizeResponse.new(message: random_utf_string(size_request.size))
@@ -26,10 +29,13 @@ class OverheadRpcServer < Overhead::Collection::Service
   end
 
   def get_topics(size_request, _unused_call)
-    create_object(size_request.size)
+    result = create_object(size_request.size)
+    # $profilers.each {|profiler| puts(profiler.report) }
+    result
   end
 end
 
+# $profilers = [MethodProfiler.observe(GRPC::RpcDesc)]
 s = GRPC::RpcServer.new
 s.add_http2_port('0.0.0.0:50051', :this_port_is_insecure)
 s.handle(OverheadRpcServer)

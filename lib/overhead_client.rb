@@ -2,81 +2,52 @@ require 'grpc'
 require 'overhead'
 require 'overhead_services_pb'
 require 'benchmark'
-require 'elasticsearch/persistence/model'
 require 'slop'
+require 'log'
+require 'byebug'
+require 'method_profiler'
+# require 'grpc_logging'
 
 OPTS = Slop.parse do |o|
-  o.integer '-n', '--number', 'Number of iterations', default: 1
+  o.integer '-n', '--number', 'Max size of object`s array to test', default: 1
+  o.integer '-i', '--iterations', 'Number of iterations', default: 100
   o.string '-s', '--suffix', 'Suffix to event logging', default: ''
   o.string '-t', '--type', 'Type of testing', default: 'rest'
   o.bool '-rm', '--remove', 'Recreate indexes', default: false
 end.freeze
 
-class Log
-  include Elasticsearch::Persistence::Model
-
-  attribute :created_at, Date, type: 'date'
-  attribute :kind, String, type: 'string', mapping: { index: 'not_analyzed' }
-  attribute :message_size, Integer, default: 0, mapping: { type: 'integer' }
-  attribute :time_spend, Integer, default: 0, mapping: { type: 'integer' }
-end
-Log.gateway.client = Elasticsearch::Client.new url: ENV['ELASTICSEARCH_URL'], log: false
 Log.gateway.client.indices.delete index: Log.index_name if OPTS.remove?
-p ENV['ELASTICSEARCH_URL']
 
-def stable_connection_test(n, suffix = '')
-  kind = "stable_connection#{suffix}"
-  stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
-  n.times do |i|
-    perform_interations(stub: stub, i: i, kind: kind)
-  end
-end
-
-def recreate_connection_test(n, suffix = '')
-  kind = "recreate_connection#{suffix}"
-  n.times do |i|
-    size = (i + 1) ** 2
-    p "Starting iteration for size: #{size}"
-    100.times do |j|
-      stub = Overhead::Collection::Stub.new('localhost:50051', :this_channel_is_insecure)
-      measure = Benchmark.measure { stub.get_feature(::Overhead::SizeRequest.new(size: size)) }
-      begin
-        Log.create(created_at: Time.now.utc.iso8601, message_size: size, time_spend: (measure.real * 1000).to_i, kind: kind)
-      rescue
-        p 'Cnnot connect to elastic'
-        retry
-      end
-      stub = nil
-    end
-  end
-end
-
-def objects_stable_connection_test(n, suffix = '')
+def objects_stable_connection_test(n, iters, suffix = '')
+  overhead_host = ENV['OVERHEAD_GRPC'] || 'localhost:50051'
   kind = "topics_request#{suffix}"
   p "Starting test #{kind}"
-  stub = Overhead::Collection::Stub.new('grpc:50051', :this_channel_is_insecure)
+  stub = Overhead::Collection::Stub.new(overhead_host, :this_channel_is_insecure)
   n.times do |i|
     size = (i + 1)
     p "Starting iteration for size: #{size}"
-    10.times do |j|
+    iters.times do |j|
       message = nil
       measure = Benchmark.measure { message = stub.get_topics(::Overhead::SizeRequest.new(size: size)) }
       begin
+        p "Time spend: #{message.time_spend}"
+        p "Real time: #{(measure.real * 1000)}"
         Log.create(created_at: Time.now.utc.iso8601, message_size: message.response_bytes, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
       rescue
+        p e
         retry
       end
     end
   end
 end
 
-def rest_objects_satble_connection_test(n, suffix = '')
+def rest_objects_satble_connection_test(n, iters, suffix = '')
   kind = "rest_topics_request#{suffix}"
   p "Starting test #{kind}"
   n.times do |i|
     size = (i + 1)
     p "Starting iteration for size: #{size}"
-    10.times do |j|
+    iters.times do |j|
       message = nil
       measure = Benchmark.measure do
 	      response = JSON.load(Net::HTTP.get(URI("http://web:50051/topics?size=#{size}&fo#{rand(1..10000)}=#{rand(1..10000)}")))
@@ -90,7 +61,6 @@ def rest_objects_satble_connection_test(n, suffix = '')
         Log.create(created_at: Time.now.utc.iso8601, message_size: message.response_bytes, time_spend: ((measure.real * 1000) - message.time_spend).to_i, kind: kind)
       rescue => e
         p e
-        p 'Cannot connect to elastic'
         retry
       end
     end
@@ -101,27 +71,14 @@ def symb_keys(hash)
   hash.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 end
 
-def perform_interations(stub:, i:, kind:)
-  size = (i + 1) ** 2
-  p "Starting iteration for size: #{size}"
-  100.times do |j|
-    measure = Benchmark.measure { stub.get_feature(::Overhead::SizeRequest.new(size: size)) }
-    begin
-      Log.create(created_at: Time.now.utc.iso8601, message_size: size, time_spend: (measure.real * 1000).to_i, kind: kind)
-    rescue
-      p 'Cnnot connect to elastic'
-      retry
-    end
-  end
-end
-
 def main
   case OPTS[:type]
   when 'rest'
-    rest_objects_satble_connection_test(OPTS[:number], OPTS[:suffix])
+    rest_objects_satble_connection_test(OPTS[:number], OPTS[:iterations], OPTS[:suffix])
   when 'grpc'
-    objects_stable_connection_test(OPTS[:number], OPTS[:suffix])  
+    objects_stable_connection_test(OPTS[:number], OPTS[:iterations], OPTS[:suffix])
   end
 end
+# $profilers = GRPC.constants.map {|n| klass = (eval("GRPC::#{n}") rescue nil); MethodProfiler.observe(klass) if klass && klass.is_a?(Class) }.compact
 main
 
